@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  replicas: 2
+  selector: 
+    matchLabels: 
+      app: hello
+      tier: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+        tier: hello
+    spec:
+      containers:
+      - name: hello
+        image: myregistry.com/root/hello/hello
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: hello
+      imagePullSecrets:
+        - name: regcred
