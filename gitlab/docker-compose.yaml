@@ -6,7 +6,7 @@ services:
     container_name: gitlab
     dns: 172.16.0.200
     environment:
-      GITLAB_ROOT_PASSWORD: password
+      GITLAB_ROOT_PASSWORD: P@ssw0rd
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://mygitlab.com'
         registry_external_url 'https://myregistry.com'
