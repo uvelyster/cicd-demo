@@ -1,6 +1,6 @@
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:latest'
+    image: 'quay.io/uvelyster/gitlab-ce:latest'
     restart: always
     hostname: 'mygitlab.com'
     container_name: gitlab
