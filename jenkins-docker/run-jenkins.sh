@@ -11,5 +11,8 @@ docker run -d --name jenkins \
 -v jenkins_home:/var/jenkins_home \
 -v /var/run/docker.sock:/var/run/docker.sock \
 jenkins/jenkins:lts
-#jenkins-docker
+# jenkins-docker
+
+
+# docker cp plugins.txt jenkins:/ ; docker exec jenkins jenkins-plugin-cli -f /plugins.txt
 
