@@ -1,0 +1,29 @@
+pipeline{
+    agent any
+    tools {
+      nodejs 'node'
+    }
+    stages{
+        stage("checkout"){
+            steps{
+                checkout scm
+            }
+        }
+
+        stage("SonarQube Analysis") {
+          steps{
+              script {
+                  scannerHome = tool 'sonar-scanner'
+              }
+              withSonarQubeEnv('mysonar') {
+                  sh "${scannerHome}/bin/sonar-scanner"
+              }
+          }
+        }
+        stage("SonarQube Quality Gate") {
+          steps {
+            waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+          }
+        }
+    }
+}

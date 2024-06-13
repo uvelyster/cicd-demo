@@ -1,0 +1,27 @@
+pipeline{
+    agent any
+    stages{
+        stage("checkout"){
+            steps{
+                checkout scm
+            }
+        }
+        stage("push image"){
+            steps{
+                script{
+                   docker.withRegistry('https://myregistry.com','registry-auth'){
+                       myapp = docker.build("myregistry.com/root/hello/hello:${env.BUILD_ID}")
+                       myapp.push(latest)
+                    }
+                }
+            }
+        }
+        stage("deploy"){
+            steps{
+              withKubeConfig(credentialsId: 'kubeconfig') {
+                sh "kubectl apply -f secrets.yml,deploy-app.yaml,svc-app.yaml"
+              }
+            }
+        }
+    }
+}

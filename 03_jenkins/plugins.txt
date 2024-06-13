@@ -17,3 +17,4 @@ kubernetes-cli:latest
 docker-plugin:latest
 docker-workflow:latest
 nodejs:latest
+sonar:latest
