@@ -1,7 +1,7 @@
 pipeline {
   agent none
   stages {
-    stage('Build & Test') {
+    stage('Build & Code Test') {
       agent {
         node {
           label 'docker'
@@ -14,19 +14,19 @@ pipeline {
       }
     }
     stage('Report & Publish') {
-      parallel {
-        stage('Report & Publish') {
-          agent {
-            node {
-              label 'docker'
-            }
-          }
-          steps {
-            unstash 'build-test-artifacts'
-            junit '**/target/surefire-reports/TEST-*.xml'
-            archiveArtifacts(onlyIfSuccessful: true, artifacts: 'target/*.jar')
-          }
+      agent {
+        node {
+          label 'built-in'
         }
+      }
+      steps {
+        unstash 'build-test-artifacts'
+        junit '**/target/surefire-reports/TEST-*.xml'
+        archiveArtifacts(onlyIfSuccessful: true, artifacts: 'target/*.jar')
+      }
+    }
+    stage('Publish to Repository') {
+      parallel {
         stage('Publish to Artifactory') {
           agent {
             node {
@@ -48,7 +48,16 @@ pipeline {
               }"""
               server.upload(uploadSpec)
             }
-
+          }
+        }
+        stage('Publish to Registry'){
+          steps{
+            script{
+              docker.withRegistry('https://myregistry.com:8443','registry-auth'){
+                myapp = docker.build("myregistry.com:8443/test/hello:${env.BUILD_ID}")
+                myapp.push()
+              }
+            }
           }
         }
       }

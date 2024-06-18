@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+    tools {
+      nodejs 'node'
+    }
+    stages{
+        stage("checkout"){
+            steps{
+                checkout scm
+            }
+        }
+       stage("download report format"){
+            steps{
+                sh 'docker run --rm -v trivy-data:/root -u 0 curlimages/curl curl -o /root/html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl'
+
+            }
+        }
+
+
+       stage("scan"){
+            steps{
+                sh 'docker run --rm -v trivy-data:/root/.cache/ quay.io/uvelyster/trivy image --format template --template "@/root/.cache/html.tpl" -o /root/.cache/index.html nginx'
+            }
+        }
+
+        stage("html") {
+          steps{
+              sh 'docker run -d --name trivy-report --rm -v trivy-data:/usr/share/nginx/html/ -p 1234:80 nginx'
+          }
+        }
+    }
+}

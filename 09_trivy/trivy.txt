@@ -1,0 +1,19 @@
+# run with container image 
+docker run --rm -v ~/.trivydb:/root/.cache/ quay.io/uvelyster/trivy image nginx  
+
+
+# report with table format (default) 
+docker run --rm -v ~/.trivydb:/root/.cache/ quay.io/uvelyster/trivy image nginx > trivy_report.txt
+
+# report with html format 
+curl -o html.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
+
+docker run --rm \
+  -v ~/.trivydb:/root/.cache/ \
+  -v $PWD:/root/ \
+  quay.io/uvelyster/trivy \
+  image --format template \
+  --template "@/root/html.tpl" \
+  -o /root/report.html \
+  nginx
+

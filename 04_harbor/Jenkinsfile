@@ -1,0 +1,33 @@
+pipeline{
+    agent any
+    tools {
+      dockerTool 'docker'
+    }
+    stages{
+        stage("checkout"){
+            steps{
+                checkout scm
+            }
+        }
+        stage("push image"){
+            steps{
+                script{
+                   docker.withRegistry('https://myregistry.com:8443','registry-auth'){
+                       myapp = docker.build("myregistry.com:8443/test/hello:${env.BUILD_ID}")
+                       myapp.push()
+                    }
+                }
+            }
+        }
+        stage("test run"){
+            steps{
+                script{
+                   docker.withRegistry('https://myregistry.com:8443','registry-auth'){
+                       myapp = docker.build("myregistry.com:8443/test/hello:${env.BUILD_ID}")
+                       myapp.push()
+                    }
+                }
+            }
+        }
+    }
+}

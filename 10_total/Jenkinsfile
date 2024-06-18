@@ -1,0 +1,50 @@
+pipeline{
+    agent any
+    tools {
+      dockerTool 'docker'
+      nodejs 'node'
+    }
+    stages{
+        stage("checkout"){
+            steps{
+                checkout scm
+            }
+        }
+
+        stage("SonarQube Analysis") {
+          steps{
+              script {
+                  scannerHome = tool 'sonar-scanner'
+              }
+              withSonarQubeEnv('mysonar') {
+                  sh "${scannerHome}/bin/sonar-scanner"
+              }
+          }
+        }
+/*        stage("SonarQube Quality Gate") {
+          steps {
+              timeout(time: 1, unit: 'MINUTES') {
+                  waitForQualityGate abortPipeline: true, credentialsId: 'sonar-token'
+              }
+          }
+        }
+*/
+        stage("push image"){
+            steps{
+                script{
+                   docker.withRegistry('https://myregistry.com:8443','registry-auth'){
+                       myapp = docker.build("myregistry.com:8443/test/hello:${env.BUILD_ID}")
+                       myapp.push()
+                    }
+                }
+            }
+        }
+        stage("deploy"){
+            steps{
+              withKubeConfig(credentialsId: 'kubeconfig') {
+                sh "kubectl apply -f secrets.yaml,deploy-app.yaml,svc-app.yaml"
+              }
+            }
+        }
+    }
+}
