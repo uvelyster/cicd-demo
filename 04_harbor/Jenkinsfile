@@ -19,15 +19,5 @@ pipeline{
                 }
             }
         }
-        stage("test run"){
-            steps{
-                script{
-                   docker.withRegistry('https://myregistry.com:8443','registry-auth'){
-                       myapp = docker.build("myregistry.com:8443/test/hello:${env.BUILD_ID}")
-                       myapp.push()
-                    }
-                }
-            }
-        }
     }
 }
