@@ -25,7 +25,7 @@ pipeline{
 
         stage("html") {
           steps{
-              sh 'docker run -d --name trivy-report --rm -v trivy-data:/usr/share/nginx/html/ -p 1234:80 nginx'
+              sh 'docker run -d --name trivy-report --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-data:/usr/share/nginx/html/ -p 1234:80 nginx'
           }
         }
     }
